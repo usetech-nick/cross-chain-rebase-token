@@ -46,7 +46,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
 
     uint256 private constant PRECISION_FACTOR = 1e18;
     bytes32 private constant MINT_AND_BURN_ROLE = keccak256("MINT_AND_BURN_ROLE");
-    uint256 private s_interestRate = 5e10; // 0.000000005 -> 5e10 tokens to be minted per second
+    uint256 private s_interestRate = (5 * PRECISION_FACTOR) / 1e8;
     mapping(address => uint256) private s_userInterestRate;
     mapping(address => uint256) private s_userLastUpdatedTimestamp;
 
@@ -68,7 +68,7 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
      * @dev The interest rate can only decrease
      */
     function setInterestRate(uint256 _newInterestRate) external onlyOwner {
-        if (_newInterestRate > s_interestRate) {
+        if (_newInterestRate >= s_interestRate) {
             revert RebaseToken__InterestRateCanOnlyDecrease(s_interestRate, _newInterestRate);
         }
         s_interestRate = _newInterestRate;
